@@ -5,6 +5,7 @@ import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 
 const schoolNames = [
 	{
@@ -97,14 +98,49 @@ const batchNames = [
 
 export default function AddressForm() {
 	const [school, setSchool] = useState('select');
+	const [batch, setBatch] = useState('select');
+	const [fullName, setFullName] = useState('');
+	const [sslcRegNo, setSslcRegNo] = useState('');
+	const [mobile, setMobile] = useState('');
+	const [othSchool, setOthSchool] = useState('');
+	const [othBatch, setOthBatch] = useState('');
 
 	const handleSchoolChange = (event) => {
 		setSchool(event.target.value);
+		setOthSchool(event.target.value);
 	};
-	const [batch, setBatch] = useState('select');
 
 	const handleBatchChange = (event) => {
 		setBatch(event.target.value);
+		setOthBatch(event.target.value);
+	};
+
+	const handleSubmit = () => {
+		if (
+			!fullName ||
+			!sslcRegNo ||
+			!mobile ||
+			!othSchool ||
+			othSchool === 'select' ||
+			othSchool === 'other' ||
+			!othBatch ||
+			othBatch === 'select' ||
+			othBatch === 'other'
+		) {
+			alert('issue 1');
+			return;
+		}
+		if (mobile.length !== 10) {
+			alert('issue 2');
+			return;
+		}
+		console.log('data: ', {
+			fullName,
+			sslcRegNo,
+			mobile,
+			school: othSchool,
+			batch: othBatch,
+		});
 	};
 
 	return (
@@ -121,6 +157,10 @@ export default function AddressForm() {
 						label='Full name'
 						fullWidth
 						variant='standard'
+						value={fullName}
+						onChange={(e) => {
+							setFullName(e.target.value);
+						}}
 					/>
 				</Grid>
 				<Grid item xs={12}>
@@ -131,6 +171,10 @@ export default function AddressForm() {
 						label='SSLC Registration Number'
 						fullWidth
 						variant='standard'
+						value={sslcRegNo}
+						onChange={(e) => {
+							setSslcRegNo(e.target.value);
+						}}
 					/>
 				</Grid>
 				<Grid item xs={12}>
@@ -146,6 +190,10 @@ export default function AddressForm() {
 							startAdornment: (
 								<InputAdornment position='start'>+91</InputAdornment>
 							),
+						}}
+						value={mobile}
+						onChange={(e) => {
+							setMobile(e.target.value);
 						}}
 					/>
 				</Grid>
@@ -176,6 +224,10 @@ export default function AddressForm() {
 							label='Specify School Name'
 							fullWidth
 							variant='standard'
+							value={othSchool}
+							onChange={(e) => {
+								setOthSchool(e.target.value);
+							}}
 						/>
 					</Grid>
 				) : null}
@@ -206,6 +258,10 @@ export default function AddressForm() {
 							label='Specify Batch Name'
 							fullWidth
 							variant='standard'
+							value={othBatch}
+							onChange={(e) => {
+								setOthBatch(e.target.value);
+							}}
 						/>
 					</Grid>
 				) : null}
@@ -216,6 +272,15 @@ export default function AddressForm() {
 					</Button>
 				</Grid>
 			</Grid>
+			<Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+				<Button
+					variant='contained'
+					onClick={handleSubmit}
+					sx={{ mt: 3, ml: 1 }}
+				>
+					SUBMIT
+				</Button>
+			</Box>
 		</React.Fragment>
 	);
 }
