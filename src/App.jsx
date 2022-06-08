@@ -4,20 +4,22 @@ import Home from './pages';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 import PageNotFound from './pages/404/PageNotFound';
+import Test from './pages/Test';
 import './App.scss';
 
 function App() {
 	return (
 		<div className='app'>
 			<BrowserRouter>
-				<Header />
-				<div className='container'>
-					<Routes>
-						<Route path='/' element={<Home />} />
-						<Route path='*' element={<PageNotFound />} />
-					</Routes>
-				</div>
-				<Footer />
+				{/* <Header /> */}
+				{/* <div className='container'> */}
+				<Routes>
+					<Route path='/' element={<Home />} />
+					<Route path='/test' element={<Test />} />
+					<Route path='*' element={<PageNotFound />} />
+				</Routes>
+				{/* </div> */}
+				{/* <Footer /> */}
 			</BrowserRouter>
 		</div>
 	);
