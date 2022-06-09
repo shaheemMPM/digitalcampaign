@@ -142,8 +142,8 @@ const centerAspectCrop = (mediaWidth, mediaHeight, aspect) => {
 export default function AddressForm() {
 	const classes = useStyles();
 	const imgRef = useRef(null);
-	const previewCanvasRef = useRef(null);
-	const livePreviewRef = useRef(null);
+	const cropCanvasRef = useRef(null);
+	const posterCanvasRef = useRef(null);
 	const posterFrameImageRef = useRef(null);
 
 	const [school, setSchool] = useState('select');
@@ -206,10 +206,15 @@ export default function AddressForm() {
 		// 	return;
 		// }
 
-		const canvas = livePreviewRef.current;
+		const canvas = posterCanvasRef.current;
 		const context = canvas.getContext('2d');
-		context.drawImage(previewCanvasRef.current, 570, 373, 430, 430);
+		context.drawImage(cropCanvasRef.current, 549, 375, 469, 469);
 		context.drawImage(posterFrameImageRef.current, 0, 0);
+
+		context.font = '100px TimesNewRoman';
+		context.textAlign = 'center';
+		context.fillStyle = '#ffffff';
+		context.fillText(fullName, 783, 965);
 
 		const link = document.createElement('a');
 		link.download = 'abcd.png';
@@ -227,13 +232,7 @@ export default function AddressForm() {
 
 	const onCropHandler = async () => {
 		setCropModalOpen(false);
-		canvasPreview(
-			imgRef.current,
-			previewCanvasRef.current,
-			completedCrop,
-			1,
-			0
-		);
+		canvasPreview(imgRef.current, cropCanvasRef.current, completedCrop, 1, 0);
 	};
 
 	return (
@@ -391,7 +390,7 @@ export default function AddressForm() {
 					<div>
 						{Boolean(completedCrop) && (
 							<canvas
-								ref={previewCanvasRef}
+								ref={cropCanvasRef}
 								style={{
 									display: cropModalOpen ? 'none' : 'block',
 									objectFit: 'contain',
@@ -463,7 +462,7 @@ export default function AddressForm() {
 				</div>
 			</Modal>
 			<canvas
-				ref={livePreviewRef}
+				ref={posterCanvasRef}
 				style={{ border: '1px solid red', display: 'none' }}
 				width='1566'
 				height='1655'

@@ -19,3 +19,8 @@ body {
 .container {
 	margin: 0px 40px;
 }
+
+@font-face {
+	font-family: 'TimesNewRoman';
+	src: local('TimesNewRoman'), url(./common/times_new_roman.ttf) format('ttf');
+}
