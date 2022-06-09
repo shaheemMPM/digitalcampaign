@@ -17,6 +17,7 @@ import 'react-image-crop/dist/ReactCrop.css';
 import { canvasPreview } from '../../utils/CanvasPreview';
 import { imgPreview } from '../../utils/ImgPreview';
 import posterFrameSrc from '../../images/poster.png';
+import momentoFrameSrc from '../../images/momento.png';
 
 const useStyles = makeStyles((theme) => ({
 	modal: {
@@ -144,7 +145,9 @@ export default function AddressForm() {
 	const imgRef = useRef(null);
 	const cropCanvasRef = useRef(null);
 	const posterCanvasRef = useRef(null);
+	const momentoCanvasRef = useRef(null);
 	const posterFrameImageRef = useRef(null);
+	const momentoFrameImageRef = useRef(null);
 
 	const [school, setSchool] = useState('select');
 	const [batch, setBatch] = useState('select');
@@ -206,6 +209,7 @@ export default function AddressForm() {
 		// 	return;
 		// }
 
+		// Poster download
 		const canvas = posterCanvasRef.current;
 		const context = canvas.getContext('2d');
 		context.drawImage(cropCanvasRef.current, 549, 375, 469, 469);
@@ -217,9 +221,25 @@ export default function AddressForm() {
 		context.fillText(fullName, 783, 965);
 
 		const link = document.createElement('a');
-		link.download = 'abcd.png';
+		link.download = 'insight_poster.png';
 		link.href = canvas.toDataURL('image/png');
 		link.click();
+
+		// Momento download
+		const mCanvas = momentoCanvasRef.current;
+		const mContext = mCanvas.getContext('2d');
+		mContext.drawImage(cropCanvasRef.current, 310, 489, 496, 496);
+		mContext.drawImage(momentoFrameImageRef.current, 0, 0);
+
+		mContext.font = 'bold 80px TimesNewRoman';
+		mContext.textAlign = 'center';
+		mContext.fillStyle = '#ff0000';
+		mContext.fillText(fullName, 557.5, 1130);
+
+		const mLink = document.createElement('a');
+		mLink.download = 'insight_momento.png';
+		mLink.href = mCanvas.toDataURL('image/png');
+		mLink.click();
 
 		// console.log('data: ', {
 		// 	fullName,
@@ -463,14 +483,26 @@ export default function AddressForm() {
 			</Modal>
 			<canvas
 				ref={posterCanvasRef}
-				style={{ border: '1px solid red', display: 'none' }}
+				style={{ display: 'none' }}
 				width='1566'
+				height='1655'
+			/>
+			<canvas
+				ref={momentoCanvasRef}
+				style={{ display: 'none' }}
+				width='1115'
 				height='1655'
 			/>
 			<img
 				src={posterFrameSrc}
 				alt='poster frame'
 				ref={posterFrameImageRef}
+				style={{ display: 'none' }}
+			/>
+			<img
+				src={momentoFrameSrc}
+				alt='momento frame'
+				ref={momentoFrameImageRef}
 				style={{ display: 'none' }}
 			/>
 		</React.Fragment>
