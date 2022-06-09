@@ -405,11 +405,14 @@ export default function AddressForm() {
 				aria-describedby='transition-modal-description'
 				className={classes.modal}
 				open={cropModalOpen}
-				onClose={() => {
+				onClose={(_, reason) => {
+					if (reason && reason === 'backdropClick') return;
 					setCropModalOpen(false);
 				}}
+				disableEscapeKeyDown
 			>
 				<div className={classes.paper}>
+					<Button>Default</Button>
 					{Boolean(imgSrc) && (
 						<ReactCrop
 							crop={crop}
@@ -427,9 +430,22 @@ export default function AddressForm() {
 						</ReactCrop>
 					)}
 					<Button
+						color='error'
+						variant='contained'
+						onClick={() => {
+							setCropModalOpen(false);
+							setImgSrc('');
+							setCrop(undefined);
+							setCompletedCrop(undefined);
+						}}
+						sx={{ mt: 3, ml: 1 }}
+					>
+						CANCEL
+					</Button>
+					<Button
 						variant='contained'
 						onClick={onCropHandler}
-						sx={{ mt: 3, ml: 1 }}
+						sx={{ mt: 1, ml: 1 }}
 					>
 						CROP
 					</Button>
