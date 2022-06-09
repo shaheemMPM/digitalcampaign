@@ -6,6 +6,8 @@ import InputAdornment from '@mui/material/InputAdornment';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 const schoolNames = [
 	{
@@ -104,6 +106,7 @@ export default function AddressForm() {
 	const [mobile, setMobile] = useState('');
 	const [othSchool, setOthSchool] = useState('');
 	const [othBatch, setOthBatch] = useState('');
+	const [errorMessage, setErrorMessage] = useState('');
 
 	const handleSchoolChange = (event) => {
 		setSchool(event.target.value);
@@ -127,11 +130,11 @@ export default function AddressForm() {
 			othBatch === 'select' ||
 			othBatch === 'other'
 		) {
-			alert('issue 1');
+			setErrorMessage('fill all required fields');
 			return;
 		}
-		if (mobile.length !== 10) {
-			alert('issue 2');
+		if (mobile.length !== 10 || isNaN(mobile)) {
+			setErrorMessage('enter a valid mobile number');
 			return;
 		}
 		console.log('data: ', {
@@ -145,6 +148,24 @@ export default function AddressForm() {
 
 	return (
 		<React.Fragment>
+			<Snackbar
+				open={!!errorMessage}
+				autoHideDuration={2000}
+				onClose={() => {
+					setErrorMessage('');
+				}}
+				anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+			>
+				<Alert
+					severity='error'
+					onClose={() => {
+						setErrorMessage('');
+					}}
+					sx={{ width: '100%' }}
+				>
+					{errorMessage}
+				</Alert>
+			</Snackbar>
 			<Typography variant='h6' gutterBottom>
 				Fill the form
 			</Typography>
