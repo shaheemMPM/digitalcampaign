@@ -2,6 +2,7 @@ import React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { Link } from 'react-router-dom';
 
 import insightLogoInverted from '../../images/insight_inverted.png';
 
@@ -18,12 +19,18 @@ const Header = () => {
 				borderBottom: (t) => `1px solid ${t.palette.divider}`,
 			}}
 		>
-			<Toolbar>
-				<img className='insight-logo' src={insightLogoInverted} alt='insight' />
-				<Typography variant='h6' color='inherit' noWrap>
-					INSIGHT
-				</Typography>
-			</Toolbar>
+			<Link to='/'>
+				<Toolbar>
+					<img
+						className='insight-logo'
+						src={insightLogoInverted}
+						alt='insight'
+					/>
+					<Typography variant='h6' color='#221e1e' noWrap>
+						INSIGHT
+					</Typography>
+				</Toolbar>
+			</Link>
 		</AppBar>
 	);
 };
