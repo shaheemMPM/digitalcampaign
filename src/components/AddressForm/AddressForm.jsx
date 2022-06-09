@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import axios from 'axios';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
@@ -15,7 +16,6 @@ import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 
 import { canvasPreview } from '../../utils/CanvasPreview';
-import { imgPreview } from '../../utils/ImgPreview';
 import posterFrameSrc from '../../images/poster.png';
 import momentoFrameSrc from '../../images/momento.png';
 
@@ -157,6 +157,7 @@ export default function AddressForm() {
 	const [othSchool, setOthSchool] = useState('');
 	const [othBatch, setOthBatch] = useState('');
 	const [errorMessage, setErrorMessage] = useState('');
+	const [successMessage, setSuccessMessage] = useState('');
 	const [cropModalOpen, setCropModalOpen] = useState(false);
 	const [imgSrc, setImgSrc] = useState('');
 	const [crop, setCrop] = useState();
@@ -190,24 +191,24 @@ export default function AddressForm() {
 	};
 
 	const handleSubmit = () => {
-		// if (
-		// 	!fullName ||
-		// 	!sslcRegNo ||
-		// 	!mobile ||
-		// 	!othSchool ||
-		// 	othSchool === 'select' ||
-		// 	othSchool === 'other' ||
-		// 	!othBatch ||
-		// 	othBatch === 'select' ||
-		// 	othBatch === 'other'
-		// ) {
-		// 	setErrorMessage('fill all required fields');
-		// 	return;
-		// }
-		// if (mobile.length !== 10 || isNaN(mobile)) {
-		// 	setErrorMessage('enter a valid mobile number');
-		// 	return;
-		// }
+		if (
+			!fullName ||
+			!sslcRegNo ||
+			!mobile ||
+			!othSchool ||
+			othSchool === 'select' ||
+			othSchool === 'other' ||
+			!othBatch ||
+			othBatch === 'select' ||
+			othBatch === 'other'
+		) {
+			setErrorMessage('fill all required fields');
+			return;
+		}
+		if (mobile.length !== 10 || isNaN(mobile)) {
+			setErrorMessage('enter a valid mobile number');
+			return;
+		}
 
 		// Poster download
 		const canvas = posterCanvasRef.current;
@@ -225,7 +226,7 @@ export default function AddressForm() {
 		link.href = canvas.toDataURL('image/png');
 		link.click();
 
-		// Momento download
+		// Momento upload
 		const mCanvas = momentoCanvasRef.current;
 		const mContext = mCanvas.getContext('2d');
 		mContext.drawImage(cropCanvasRef.current, 310, 489, 496, 496);
@@ -236,18 +237,25 @@ export default function AddressForm() {
 		mContext.fillStyle = '#ff0000';
 		mContext.fillText(fullName, 557.5, 1130);
 
-		const mLink = document.createElement('a');
-		mLink.download = 'insight_momento.png';
-		mLink.href = mCanvas.toDataURL('image/png');
-		mLink.click();
+		const momentoImage = mCanvas.toDataURL('image/png');
 
-		// console.log('data: ', {
-		// 	fullName,
-		// 	sslcRegNo,
-		// 	mobile,
-		// 	school: othSchool,
-		// 	batch: othBatch,
-		// });
+		axios
+			.post('/api/form', {
+				fullName,
+				sslcRegNo,
+				mobile,
+				school: othSchool,
+				batch: othBatch,
+				imageBinary: momentoImage,
+			})
+			.then((response) => {
+				console.log(response);
+				setSuccessMessage('Successfully uploaded form! thank you');
+			})
+			.catch((error) => {
+				setErrorMessage('Sorry form upload failed, try again');
+				console.log(error);
+			});
 	};
 
 	const onCropHandler = async () => {
@@ -273,6 +281,24 @@ export default function AddressForm() {
 					sx={{ width: '100%' }}
 				>
 					{errorMessage}
+				</Alert>
+			</Snackbar>
+			<Snackbar
+				open={!!successMessage}
+				autoHideDuration={2000}
+				onClose={() => {
+					setSuccessMessage('');
+				}}
+				anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+			>
+				<Alert
+					severity='success'
+					onClose={() => {
+						setSuccessMessage('');
+					}}
+					sx={{ width: '100%' }}
+				>
+					{successMessage}
 				</Alert>
 			</Snackbar>
 			<Typography variant='h6' gutterBottom>
