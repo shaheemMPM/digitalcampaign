@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
@@ -8,6 +8,30 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import Modal from '@mui/material/Modal';
+import { makeStyles } from '@mui/styles';
+
+import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
+
+import { canvasPreview } from '../../utils/CanvasPreview';
+import { imgPreview } from '../../utils/ImgPreview';
+
+const useStyles = makeStyles((theme) => ({
+	modal: {
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	paper: {
+		backgroundColor: '#ffffff',
+		borderRadius: '15px',
+		boxShadow: theme.shadows[5],
+		padding: theme.spacing(2, 4, 3),
+		display: 'flex',
+		flexDirection: 'column',
+	},
+}));
 
 const schoolNames = [
 	{
@@ -98,7 +122,27 @@ const batchNames = [
 	{ value: 'other', label: 'OTHER' },
 ];
 
+const centerAspectCrop = (mediaWidth, mediaHeight, aspect) => {
+	return centerCrop(
+		makeAspectCrop(
+			{
+				unit: '%',
+				width: 90,
+			},
+			aspect,
+			mediaWidth,
+			mediaHeight
+		),
+		mediaWidth,
+		mediaHeight
+	);
+};
+
 export default function AddressForm() {
+	const classes = useStyles();
+	const imgRef = useRef(null);
+	const previewCanvasRef = useRef(null);
+
 	const [school, setSchool] = useState('select');
 	const [batch, setBatch] = useState('select');
 	const [fullName, setFullName] = useState('');
@@ -107,6 +151,27 @@ export default function AddressForm() {
 	const [othSchool, setOthSchool] = useState('');
 	const [othBatch, setOthBatch] = useState('');
 	const [errorMessage, setErrorMessage] = useState('');
+	const [cropModalOpen, setCropModalOpen] = useState(false);
+	const [imgSrc, setImgSrc] = useState('');
+	const [crop, setCrop] = useState();
+	const [completedCrop, setCompletedCrop] = useState();
+
+	const onSelectFile = (e) => {
+		if (e.target.files && e.target.files.length > 0) {
+			setCrop(undefined); // Makes crop preview update between images.
+			const reader = new FileReader();
+			reader.addEventListener('load', () => {
+				setCropModalOpen(true);
+				setImgSrc(reader.result.toString() || '');
+			});
+			reader.readAsDataURL(e.target.files[0]);
+		}
+	};
+
+	const onImageLoad = (e) => {
+		const { width, height } = e.currentTarget;
+		setCrop(centerAspectCrop(width, height, 1));
+	};
 
 	const handleSchoolChange = (event) => {
 		setSchool(event.target.value);
@@ -144,6 +209,19 @@ export default function AddressForm() {
 			school: othSchool,
 			batch: othBatch,
 		});
+	};
+
+	const onCropHandler = async () => {
+		setCropModalOpen(false);
+		canvasPreview(
+			imgRef.current,
+			previewCanvasRef.current,
+			completedCrop,
+			1,
+			0
+		);
+		const imgS = await imgPreview(imgRef.current, completedCrop);
+		console.log('imgS: ', imgS);
 	};
 
 	return (
@@ -289,8 +367,28 @@ export default function AddressForm() {
 				<Grid item xs={12}>
 					<Button variant='contained' color='warning' component='label'>
 						Upload Image*
-						<input type='file' hidden />
+						<input
+							type='file'
+							onChange={onSelectFile}
+							accept='image/*'
+							hidden
+						/>
 					</Button>
+				</Grid>
+				<Grid item xs={12}>
+					<div>
+						{Boolean(completedCrop) && (
+							<canvas
+								ref={previewCanvasRef}
+								style={{
+									display: cropModalOpen ? 'none' : 'block',
+									objectFit: 'contain',
+									width: '150px',
+									height: '150px',
+								}}
+							/>
+						)}
+					</div>
 				</Grid>
 			</Grid>
 			<Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -302,6 +400,41 @@ export default function AddressForm() {
 					SUBMIT
 				</Button>
 			</Box>
+			<Modal
+				aria-labelledby='transition-modal-title'
+				aria-describedby='transition-modal-description'
+				className={classes.modal}
+				open={cropModalOpen}
+				onClose={() => {
+					setCropModalOpen(false);
+				}}
+			>
+				<div className={classes.paper}>
+					{Boolean(imgSrc) && (
+						<ReactCrop
+							crop={crop}
+							onChange={(_, percentCrop) => setCrop(percentCrop)}
+							onComplete={(c) => setCompletedCrop(c)}
+							aspect={1}
+						>
+							<img
+								style={{ maxHeight: '70vh' }}
+								ref={imgRef}
+								alt='Crop me'
+								src={imgSrc}
+								onLoad={onImageLoad}
+							/>
+						</ReactCrop>
+					)}
+					<Button
+						variant='contained'
+						onClick={onCropHandler}
+						sx={{ mt: 3, ml: 1 }}
+					>
+						CROP
+					</Button>
+				</div>
+			</Modal>
 		</React.Fragment>
 	);
 }
