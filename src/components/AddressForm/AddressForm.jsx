@@ -16,6 +16,7 @@ import 'react-image-crop/dist/ReactCrop.css';
 
 import { canvasPreview } from '../../utils/CanvasPreview';
 import { imgPreview } from '../../utils/ImgPreview';
+import posterFrameSrc from '../../images/poster.png';
 
 const useStyles = makeStyles((theme) => ({
 	modal: {
@@ -142,6 +143,8 @@ export default function AddressForm() {
 	const classes = useStyles();
 	const imgRef = useRef(null);
 	const previewCanvasRef = useRef(null);
+	const livePreviewRef = useRef(null);
+	const posterFrameImageRef = useRef(null);
 
 	const [school, setSchool] = useState('select');
 	const [batch, setBatch] = useState('select');
@@ -184,31 +187,42 @@ export default function AddressForm() {
 	};
 
 	const handleSubmit = () => {
-		if (
-			!fullName ||
-			!sslcRegNo ||
-			!mobile ||
-			!othSchool ||
-			othSchool === 'select' ||
-			othSchool === 'other' ||
-			!othBatch ||
-			othBatch === 'select' ||
-			othBatch === 'other'
-		) {
-			setErrorMessage('fill all required fields');
-			return;
-		}
-		if (mobile.length !== 10 || isNaN(mobile)) {
-			setErrorMessage('enter a valid mobile number');
-			return;
-		}
-		console.log('data: ', {
-			fullName,
-			sslcRegNo,
-			mobile,
-			school: othSchool,
-			batch: othBatch,
-		});
+		// if (
+		// 	!fullName ||
+		// 	!sslcRegNo ||
+		// 	!mobile ||
+		// 	!othSchool ||
+		// 	othSchool === 'select' ||
+		// 	othSchool === 'other' ||
+		// 	!othBatch ||
+		// 	othBatch === 'select' ||
+		// 	othBatch === 'other'
+		// ) {
+		// 	setErrorMessage('fill all required fields');
+		// 	return;
+		// }
+		// if (mobile.length !== 10 || isNaN(mobile)) {
+		// 	setErrorMessage('enter a valid mobile number');
+		// 	return;
+		// }
+
+		const canvas = livePreviewRef.current;
+		const context = canvas.getContext('2d');
+		context.drawImage(previewCanvasRef.current, 570, 373, 430, 430);
+		context.drawImage(posterFrameImageRef.current, 0, 0);
+
+		const link = document.createElement('a');
+		link.download = 'abcd.png';
+		link.href = canvas.toDataURL('image/png');
+		link.click();
+
+		// console.log('data: ', {
+		// 	fullName,
+		// 	sslcRegNo,
+		// 	mobile,
+		// 	school: othSchool,
+		// 	batch: othBatch,
+		// });
 	};
 
 	const onCropHandler = async () => {
@@ -220,8 +234,6 @@ export default function AddressForm() {
 			1,
 			0
 		);
-		const imgS = await imgPreview(imgRef.current, completedCrop);
-		console.log('imgS: ', imgS);
 	};
 
 	return (
@@ -412,7 +424,6 @@ export default function AddressForm() {
 				disableEscapeKeyDown
 			>
 				<div className={classes.paper}>
-					<Button>Default</Button>
 					{Boolean(imgSrc) && (
 						<ReactCrop
 							crop={crop}
@@ -451,6 +462,18 @@ export default function AddressForm() {
 					</Button>
 				</div>
 			</Modal>
+			<canvas
+				ref={livePreviewRef}
+				style={{ border: '1px solid red', display: 'none' }}
+				width='1566'
+				height='1655'
+			/>
+			<img
+				src={posterFrameSrc}
+				alt='poster frame'
+				ref={posterFrameImageRef}
+				style={{ display: 'none' }}
+			/>
 		</React.Fragment>
 	);
 }
