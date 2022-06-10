@@ -11,6 +11,7 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import Modal from '@mui/material/Modal';
 import { makeStyles } from '@mui/styles';
+import Swal from 'sweetalert2';
 
 import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -156,8 +157,6 @@ export default function AddressForm() {
 	const [mobile, setMobile] = useState('');
 	const [othSchool, setOthSchool] = useState('');
 	const [othBatch, setOthBatch] = useState('');
-	const [errorMessage, setErrorMessage] = useState('');
-	const [successMessage, setSuccessMessage] = useState('');
 	const [cropModalOpen, setCropModalOpen] = useState(false);
 	const [imgSrc, setImgSrc] = useState('');
 	const [crop, setCrop] = useState();
@@ -200,13 +199,22 @@ export default function AddressForm() {
 			othSchool === 'other' ||
 			!othBatch ||
 			othBatch === 'select' ||
-			othBatch === 'other'
+			othBatch === 'other' ||
+			!completedCrop
 		) {
-			setErrorMessage('fill all required fields');
+			Swal.fire({
+				icon: 'error',
+				title: 'Oops...',
+				text: `fill all required fields`,
+			});
 			return;
 		}
 		if (mobile.length !== 10 || isNaN(mobile)) {
-			setErrorMessage('enter a valid mobile number');
+			Swal.fire({
+				icon: 'error',
+				title: 'Oops...',
+				text: `enter a valid mobile number`,
+			});
 			return;
 		}
 
@@ -250,10 +258,20 @@ export default function AddressForm() {
 			})
 			.then((response) => {
 				console.log(response);
-				setSuccessMessage('Successfully uploaded form! thank you');
+				Swal.fire({
+					icon: 'success',
+					title: 'Success',
+					text: `Successfully uploaded form! thank you`,
+				}).then(() => {
+					window.location.reload();
+				});
 			})
 			.catch((error) => {
-				setErrorMessage('Sorry form upload failed, try again');
+				Swal.fire({
+					icon: 'error',
+					title: 'Oops...',
+					text: `Sorry form upload failed, try again!\n\n${error.message}`,
+				});
 				console.log(error);
 			});
 	};
@@ -265,42 +283,6 @@ export default function AddressForm() {
 
 	return (
 		<React.Fragment>
-			<Snackbar
-				open={!!errorMessage}
-				autoHideDuration={2000}
-				onClose={() => {
-					setErrorMessage('');
-				}}
-				anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-			>
-				<Alert
-					severity='error'
-					onClose={() => {
-						setErrorMessage('');
-					}}
-					sx={{ width: '100%' }}
-				>
-					{errorMessage}
-				</Alert>
-			</Snackbar>
-			<Snackbar
-				open={!!successMessage}
-				autoHideDuration={2000}
-				onClose={() => {
-					setSuccessMessage('');
-				}}
-				anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-			>
-				<Alert
-					severity='success'
-					onClose={() => {
-						setSuccessMessage('');
-					}}
-					sx={{ width: '100%' }}
-				>
-					{successMessage}
-				</Alert>
-			</Snackbar>
 			<Typography variant='h6' gutterBottom>
 				Fill the form
 			</Typography>

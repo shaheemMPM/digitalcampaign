@@ -4,6 +4,7 @@ import Home from './pages';
 import PageNotFound from './pages/404/PageNotFound';
 import './App.scss';
 import Header from './components/Header/Header';
+import 'sweetalert2/src/sweetalert2.scss';
 
 function App() {
 	return (
