@@ -25,7 +25,7 @@ router.get('/', (req, res) => {
 // 	for (let i = 0; i < users.length; i++) {
 // 		const user = users[i];
 // 		newUsers.push({
-// 			sslcRegNo: user.sslcRegNo,
+// 			examRegNo: user.examRegNo,
 // 			fullName: user.fullName,
 // 			mobile: user.mobile,
 // 			school: user.school,
@@ -64,9 +64,9 @@ router.get('/', (req, res) => {
 // });
 
 router.post('/form', async (req, res) => {
-	const { fullName, sslcRegNo, mobile, school, batch, imageBinary } = req.body;
+	const { fullName, examRegNo, mobile, school, batch, imageBinary } = req.body;
 
-	const oldUser = await User.findOne({ sslcRegNo });
+	const oldUser = await User.findOne({ examRegNo });
 
 	const buf = Buffer.from(
 		imageBinary.replace(/^data:image\/\w+;base64,/, ''),
@@ -74,7 +74,7 @@ router.post('/form', async (req, res) => {
 	);
 	const data = {
 		Bucket: 'insightprimes0',
-		Key: `momento/${sslcRegNo}`,
+		Key: `momento/${examRegNo}`,
 		Body: buf,
 		ContentEncoding: 'base64',
 		ContentType: 'image/jpeg',
@@ -98,7 +98,7 @@ router.post('/form', async (req, res) => {
 					mobile,
 					school,
 					batch,
-					momento: `https://insightprimes0.s3.ap-south-1.amazonaws.com/momento/${sslcRegNo}`,
+					momento: `https://insightprimes0.s3.ap-south-1.amazonaws.com/momento/${examRegNo}`,
 				},
 			},
 			{ new: true }
@@ -106,11 +106,11 @@ router.post('/form', async (req, res) => {
 	} else {
 		await new User({
 			fullName,
-			sslcRegNo,
+			examRegNo,
 			mobile,
 			school,
 			batch,
-			momento: `https://insightprimes0.s3.ap-south-1.amazonaws.com/momento/${sslcRegNo}`,
+			momento: `https://insightprimes0.s3.ap-south-1.amazonaws.com/momento/${examRegNo}`,
 		}).save();
 	}
 

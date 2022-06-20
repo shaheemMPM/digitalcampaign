@@ -152,7 +152,7 @@ export default function AddressForm() {
 	const [school, setSchool] = useState('select');
 	const [batch, setBatch] = useState('select');
 	const [fullName, setFullName] = useState('');
-	const [sslcRegNo, setSslcRegNo] = useState('');
+	const [examRegNo, setExamRegNo] = useState('');
 	const [mobile, setMobile] = useState('');
 	const [othSchool, setOthSchool] = useState('');
 	const [othBatch, setOthBatch] = useState('');
@@ -193,7 +193,7 @@ export default function AddressForm() {
 		setSchool('select');
 		setBatch('select');
 		setFullName('');
-		setSslcRegNo('');
+		setExamRegNo('');
 		setMobile('');
 		setOthSchool('');
 		setOthBatch('');
@@ -207,7 +207,7 @@ export default function AddressForm() {
 	const handleSubmit = () => {
 		if (
 			!fullName ||
-			!sslcRegNo ||
+			!examRegNo ||
 			!mobile ||
 			!othSchool ||
 			othSchool === 'select' ||
@@ -266,7 +266,7 @@ export default function AddressForm() {
 		axios
 			.post('/api/form', {
 				fullName,
-				sslcRegNo,
+				examRegNo,
 				mobile,
 				school: othSchool,
 				batch: othBatch,
@@ -331,12 +331,12 @@ export default function AddressForm() {
 								required
 								id='regNo'
 								name='regNo'
-								label='SSLC Registration Number'
+								label='Exam Registration Number'
 								fullWidth
 								variant='standard'
-								value={sslcRegNo}
+								value={examRegNo}
 								onChange={(e) => {
-									setSslcRegNo(e.target.value);
+									setExamRegNo(e.target.value);
 								}}
 							/>
 						</Grid>

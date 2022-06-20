@@ -16,7 +16,7 @@ const schemaOptions = {
 
 const userSchema = new Schema(
 	{
-		sslcRegNo: {
+		examRegNo: {
 			type: String,
 			lowercase: true,
 			unique: true,
@@ -40,7 +40,7 @@ userSchema.virtual('id').get(function () {
 userSchema.methods.toJSON = function () {
 	return {
 		id: this._id,
-		sslcRegNo: this.sslcRegNo,
+		examRegNo: this.examRegNo,
 		fullName: this.fullName,
 		mobile: this.mobile,
 		school: this.school,
