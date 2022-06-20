@@ -36,91 +36,37 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const schoolNames = [
-	{
-		value: 'select',
-		label: 'Select your school',
-	},
-	{
-		value: 'FOHSS',
-		label: 'FOHSS',
-	},
-	{
-		value: 'GBHSS MPM',
-		label: 'GBHSS MPM',
-	},
-	{
-		value: 'GGHSS MPM',
-		label: 'GGHSS MPM',
-	},
-	{
-		value: 'GHSS IRUMBUZHI',
-		label: 'GHSS IRUMBUZHI',
-	},
-	{
-		value: 'GHSS MAKARAPARAMBA',
-		label: 'GHSS MAKARAPARAMBA',
-	},
-	{
-		value: 'GHSS OTHUKKUNGAL',
-		label: 'GHSS OTHUKKUNGAL',
-	},
-	{
-		value: 'GHSS PALLIPPURAM',
-		label: 'GHSS PALLIPPURAM',
-	},
-	{
-		value: 'IKTHSS CHERUKULAMBA',
-		label: 'IKTHSS CHERUKULAMBA',
-	},
-	{
-		value: 'ISLAHIYA',
-		label: 'ISLAHIYA',
-	},
-	{
-		value: 'MSP HSS',
-		label: 'MSP HSS',
-	},
-	{
-		value: 'MSPEMHSS',
-		label: 'MSPEMHSS',
-	},
-	{
-		value: 'PMSAMA CHEMMANKADAV',
-		label: 'PMSAMA CHEMMANKADAV',
-	},
-	{
-		value: 'ST. GEMMAS GIRLS HSS',
-		label: 'ST. GEMMAS GIRLS HSS',
-	},
-	{
-		value: 'TSS VADAKKANGARA',
-		label: 'TSS VADAKKANGARA',
-	},
-	{
-		value: 'other',
-		label: 'OTHER',
-	},
+	{ value: 'select', label: 'Select your school' },
+	{ value: 'AKMHSS KOTTUR', label: 'AKMHSS KOTTUR' },
+	{ value: 'DUHSS PANAKKAD', label: 'DUHSS PANAKKAD' },
+	{ value: 'GBHSS MANJERI', label: 'GBHSS MANJERI' },
+	{ value: 'GBHSS MALAPPURAM', label: 'GBHSS MALAPPURAM' },
+	{ value: 'GGHSS MALAPPURAM', label: 'GGHSS MALAPPURAM' },
+	{ value: 'GGHSS MANJERI', label: 'GGHSS MANJERI' },
+	{ value: 'GHSS IRUMBUZHI', label: 'GHSS IRUMBUZHI' },
+	{ value: 'GHSS MAKKARAPARAMBA', label: 'GHSS MAKKARAPARAMBA' },
+	{ value: 'GHSS MANKADA', label: 'GHSS MANKADA' },
+	{ value: 'GHSS OTHUKKUNGAL', label: 'GHSS OTHUKKUNGAL' },
+	{ value: 'GHSS POKKOTTUR', label: 'GHSS POKKOTTUR' },
+	{ value: 'IKTHSS', label: 'IKTHSS' },
+	{ value: 'MMETHSS', label: 'MMETHSS' },
+	{ value: 'MSPHSS MALAPPURAM', label: 'MSPHSS MALAPPURAM' },
+	{ value: 'PKMHSS EDARIKKODE', label: 'PKMHSS EDARIKKODE' },
+	{ value: 'PMSAMA CHEMMANKADAV', label: 'PMSAMA CHEMMANKADAV' },
+	{ value: 'ST GEMMAS', label: 'ST GEMMAS' },
+	{ value: 'TSS VADAKKANGARA', label: 'TSS VADAKKANGARA' },
+	{ value: 'VHMHSS MORAYUR', label: 'VHMHSS MORAYUR' },
+	{ value: 'other', label: 'OTHER' },
 ];
 
 const batchNames = [
 	{ value: 'select', label: 'Select your batch' },
-	{ value: 'B1', label: 'B1' },
-	{ value: 'B2', label: 'B2' },
-	{ value: 'B3', label: 'B3' },
-	{ value: 'B4', label: 'B4' },
-	{ value: 'B5', label: 'B5' },
-	{ value: 'B6', label: 'B6' },
-	{ value: 'B7', label: 'B7' },
-	{ value: 'B8', label: 'B8' },
-	{ value: 'B9', label: 'B9' },
-	{ value: 'B10', label: 'B10' },
-	{ value: 'B11', label: 'B11' },
-	{ value: 'B12', label: 'B12' },
-	{ value: 'B13', label: 'B13' },
-	{ value: 'B14', label: 'B14' },
-	{ value: 'B15', label: 'B15' },
-	{ value: 'B16', label: 'B16' },
-	{ value: 'B17', label: 'B17' },
+	{ value: 'S1', label: 'S1' },
+	{ value: 'S2', label: 'S2' },
+	{ value: 'S3', label: 'S3' },
+	{ value: 'S4', label: 'S4' },
+	{ value: 'S5', label: 'S5' },
+	{ value: 'S6', label: 'S6' },
 	{ value: 'other', label: 'OTHER' },
 ];
 
@@ -244,7 +190,7 @@ export default function AddressForm() {
 		context.font = '100px TimesNewRoman';
 		context.textAlign = 'center';
 		context.fillStyle = '#ffffff';
-		context.fillText(fullName, 783, 965);
+		context.fillText(fullName.toUpperCase(), 783, 965);
 
 		const link = document.createElement('a');
 		link.download = 'insight_poster.png';
@@ -259,7 +205,7 @@ export default function AddressForm() {
 		mContext.font = 'bold 80px TimesNewRoman';
 		mContext.textAlign = 'center';
 		mContext.fillStyle = '#ff0000';
-		mContext.fillText(fullName, 557.5, 1130);
+		mContext.fillText(fullName.toUpperCase(), 557.5, 1130);
 
 		const momentoImage = mCanvas.toDataURL('image/png');
 
