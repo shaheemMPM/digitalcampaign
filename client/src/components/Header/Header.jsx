@@ -24,10 +24,10 @@ const Header = () => {
 					<img
 						className='insight-logo'
 						src={insightLogoInverted}
-						alt='insight'
+						alt='insight plus'
 					/>
 					<Typography variant='h6' color='#221e1e' noWrap>
-						INSIGHT
+						INSIGHT PLUS
 					</Typography>
 				</Toolbar>
 			</Link>
