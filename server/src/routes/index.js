@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import fs from 'fs';
+import puppeteer from 'puppeteer';
+// import fs from 'fs';
 import AWS from 'aws-sdk';
 
 import User from '../models/user';
@@ -12,10 +13,87 @@ const s3Bucket = new AWS.S3({
 
 const router = Router();
 
-router.get('/', (req, res) => {
+const scrape = async ({ regNo, dob, mode = 'hse' }) => {
+	const browser = await puppeteer.launch({});
+	const page = await browser.newPage();
+
+	const dobParam = dob.split('/').join('%2F');
+
+	await page.goto(
+		`https://results.kite.kerala.gov.in/${mode}/result_schemeI.html?regno=${regNo}&date1=${dobParam}&Submit=Submit`
+	);
+	const studentData = await page.evaluate(() => {
+		const trimmedString = (str) => {
+			if (!str) return '';
+			return str.trim();
+		};
+
+		// get student name
+		const studentName = trimmedString(
+			document.getElementById('name').innerText.split(':')[1]
+		);
+
+		// get father's name
+		const fatherName = trimmedString(
+			document.getElementById('fname').innerText.split(':')[1]
+		);
+
+		// get mother's name
+		const motherName = trimmedString(
+			document.getElementById('mname').innerText.split(':')[1]
+		);
+
+		// get school code
+		const schoolCode = trimmedString(
+			document.getElementById('school').innerText.split(':')[1]
+		);
+
+		// get group name
+		const groupName = trimmedString(
+			document.getElementById('group_name').innerText.split(':')[1]
+		);
+
+		// get subject names
+		const subjectNameCells = document.getElementsByClassName('cell1');
+		const subjects = {};
+		for (let i = 0; i < subjectNameCells.length; i++) {
+			subjects[subjectNameCells[i].innerText] = document.getElementById(
+				`TP${i + 1}_TOT`
+			).innerText;
+		}
+		return {
+			studentName,
+			fatherName,
+			motherName,
+			schoolCode,
+			groupName,
+			subjects,
+		};
+	});
+
+	const percentage =
+		(Object.values(studentData.subjects)
+			.map((val) => parseInt(val))
+			.reduce((partialSum, a) => partialSum + a, 0) *
+			100) /
+		1200;
+
+	browser.close();
+
+	return { ...studentData, percentage };
+};
+
+router.get('/', async (req, res) => {
 	res.status(200).json({
 		test: 'test endpoint',
 	});
+});
+
+router.get('/results', async (req, res) => {
+	const { regNo, dob, mode } = req.query;
+	const studentData = await scrape({ regNo, dob, mode });
+
+	res.status(200).json(studentData);
 });
 
 // router.get('/extract', async (req, res) => {
@@ -64,7 +142,20 @@ router.get('/', (req, res) => {
 // });
 
 router.post('/form', async (req, res) => {
-	const { fullName, examRegNo, mobile, school, batch, imageBinary } = req.body;
+	const {
+		examRegNo,
+		dob,
+		studentName,
+		fatherName,
+		motherName,
+		schoolCode,
+		groupName,
+		subjects,
+		percentage,
+		mobile,
+		batch,
+		imageBinary,
+	} = req.body;
 
 	const oldUser = await User.findOne({ examRegNo });
 
@@ -74,7 +165,7 @@ router.post('/form', async (req, res) => {
 	);
 	const data = {
 		Bucket: 'insightprimes0',
-		Key: `momento/${examRegNo}`,
+		Key: `photo/${examRegNo}.png`,
 		Body: buf,
 		ContentEncoding: 'base64',
 		ContentType: 'image/jpeg',
@@ -94,23 +185,36 @@ router.post('/form', async (req, res) => {
 			oldUser.id,
 			{
 				$set: {
-					fullName,
+					examRegNo,
+					dob,
+					studentName,
+					fatherName,
+					motherName,
+					schoolCode,
+					groupName,
+					subjects: JSON.stringify(subjects),
+					percentage,
 					mobile,
-					school,
 					batch,
-					momento: `https://insightprimes0.s3.ap-south-1.amazonaws.com/momento/${examRegNo}`,
+					photo: `https://insightprimes0.s3.ap-south-1.amazonaws.com/photo/${examRegNo}.png`,
 				},
 			},
 			{ new: true }
 		);
 	} else {
 		await new User({
-			fullName,
 			examRegNo,
+			dob,
+			studentName,
+			fatherName,
+			motherName,
+			schoolCode,
+			groupName,
+			subjects: JSON.stringify(subjects),
+			percentage,
 			mobile,
-			school,
 			batch,
-			momento: `https://insightprimes0.s3.ap-south-1.amazonaws.com/momento/${examRegNo}`,
+			photo: `https://insightprimes0.s3.ap-south-1.amazonaws.com/photo/${examRegNo}.png`,
 		}).save();
 	}
 
