@@ -1,0 +1,29 @@
+.form-root {
+	.css-1u3bzj6-MuiFormControl-root-MuiTextField-root {
+		width: 100%;
+	}
+}
+
+.result-button-wrapper {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+table,
+tr,
+th,
+td {
+	border: 1px solid #dcdcdc;
+}
+
+table {
+	width: 100%;
+	margin: 30px auto 40px auto;
+
+	th,
+	td {
+		text-align: left;
+		padding: 5px;
+	}
+}

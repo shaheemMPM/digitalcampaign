@@ -3,8 +3,8 @@ import React from 'react';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 
-import AddressForm from '../components/AddressForm/AddressForm';
 import Copyright from '../components/CopyRight/CopyRight';
+import ResultsForms from '../components/ResultsForms/ResultsForms';
 
 const Home = () => {
 	return (
@@ -13,7 +13,7 @@ const Home = () => {
 				variant='outlined'
 				sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}
 			>
-				<AddressForm />
+				<ResultsForms />
 			</Paper>
 			<Copyright />
 		</Container>

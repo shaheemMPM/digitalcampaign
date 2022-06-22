@@ -157,6 +157,21 @@ router.post('/form', async (req, res) => {
 		imageBinary,
 	} = req.body;
 
+	console.log('reached here: ', {
+		examRegNo,
+		dob,
+		studentName,
+		fatherName,
+		motherName,
+		schoolCode,
+		groupName,
+		subjects,
+		percentage,
+		mobile,
+		batch,
+		imageBinary,
+	});
+
 	const oldUser = await User.findOne({ examRegNo });
 
 	const buf = Buffer.from(
