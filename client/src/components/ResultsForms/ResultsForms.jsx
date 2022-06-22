@@ -153,7 +153,7 @@ export default function ResultsForms() {
 		}
 		setIsResultFetching(true);
 		axios
-			.get('http://localhost:8000/api/results', {
+			.get('/api/results', {
 				params: {
 					regNo: examRegNo,
 					dob: getDdMmYyyy(dob),
@@ -218,7 +218,7 @@ export default function ResultsForms() {
 		const croppedImage = cropCanvas.toDataURL('image/png');
 
 		axios
-			.post('http://localhost:8000/api/form', {
+			.post('/api/form', {
 				examRegNo,
 				dob: getDdMmYyyy(dob),
 				mobile,
