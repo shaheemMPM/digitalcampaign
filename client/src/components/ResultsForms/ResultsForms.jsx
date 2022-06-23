@@ -281,7 +281,7 @@ export default function ResultsForms() {
 						</Grid>
 						<Grid item xs={6}>
 							<MobileDatePicker
-								label='Date mobile'
+								label='Date of birth'
 								inputFormat='dd/MM/yyyy'
 								value={dob}
 								onChange={handleDobChange}
