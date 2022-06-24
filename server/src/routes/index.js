@@ -157,20 +157,7 @@ router.post('/form', async (req, res) => {
 		imageBinary,
 	} = req.body;
 
-	console.log('reached here: ', {
-		examRegNo,
-		dob,
-		studentName,
-		fatherName,
-		motherName,
-		schoolCode,
-		groupName,
-		subjects,
-		percentage,
-		mobile,
-		batch,
-		imageBinary,
-	});
+	console.log('Response came from: ', examRegNo);
 
 	const oldUser = await User.findOne({ examRegNo });
 
