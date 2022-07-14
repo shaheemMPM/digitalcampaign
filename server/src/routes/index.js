@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import puppeteer from 'puppeteer';
-// import fs from 'fs';
+import fs from 'fs';
 import AWS from 'aws-sdk';
 
 import User from '../models/user';
@@ -96,50 +96,67 @@ router.get('/results', async (req, res) => {
 	res.status(200).json(studentData);
 });
 
-// router.get('/extract', async (req, res) => {
-// 	const users = await User.find();
+const getSubjects = (subjects) => {
+	const jsonSubjects = JSON.parse(subjects);
+	const subjectNames = Object.keys(jsonSubjects);
+	const subjectValues = Object.values(jsonSubjects);
+	let subjectString = '';
+	for (let i = 0; i < subjectNames.length; i++) {
+		subjectString += subjectNames[i] + ' - ' + subjectValues[i] + '\n';
+	}
+	return subjectString;
+};
 
-// 	const newUsers = [];
-// 	for (let i = 0; i < users.length; i++) {
-// 		const user = users[i];
-// 		newUsers.push({
-// 			examRegNo: user.examRegNo,
-// 			fullName: user.fullName,
-// 			mobile: user.mobile,
-// 			school: user.school,
-// 			batch: user.batch,
-// 			momento: user.momento,
-// 			time: new Date(user.updatedAt).toLocaleString(),
-// 		});
-// 	}
+router.get('/extract', async (req, res) => {
+	const users = await User.find();
 
-// 	fs.writeFile('users.json', JSON.stringify(newUsers), 'utf8', (err) => {
-// 		if (err) {
-// 			res.status(200).json({
-// 				message: 'failed',
-// 				err,
-// 			});
-// 		} else {
-// 			res.status(200).json({
-// 				message: 'success',
-// 			});
-// 		}
-// 	});
-// });
+	const newUsers = [];
+	for (let i = 0; i < users.length; i++) {
+		const user = users[i];
+		newUsers.push({
+			examRegNo: user.examRegNo,
+			dob: user.dob,
+			studentName: user.studentName,
+			fatherName: user.fatherName,
+			motherName: user.motherName,
+			schoolCode: user.schoolCode,
+			groupName: user.groupName,
+			subjects: getSubjects(user.subjects),
+			percentage: user.percentage,
+			mobile: user.mobile,
+			batch: user.batch,
+			photo: user.photo,
+			time: new Date(user.updatedAt).toLocaleString(),
+		});
+	}
 
-// router.get('/cleandb', async (req, res) => {
-// 	try {
-// 		await User.deleteMany();
-// 		res.status(200).json({
-// 			message: 'successfully cleaned db',
-// 		});
-// 	} catch (error) {
-// 		res.status(500).json({
-// 			message: 'db clean error',
-// 			error,
-// 		});
-// 	}
-// });
+	fs.writeFile('users.json', JSON.stringify(newUsers), 'utf8', (err) => {
+		if (err) {
+			res.status(200).json({
+				message: 'failed',
+				err,
+			});
+		} else {
+			res.status(200).json({
+				message: 'success',
+			});
+		}
+	});
+});
+
+router.get('/cleandb', async (req, res) => {
+	try {
+		await User.deleteMany();
+		res.status(200).json({
+			message: 'successfully cleaned db',
+		});
+	} catch (error) {
+		res.status(500).json({
+			message: 'db clean error',
+			error,
+		});
+	}
+});
 
 router.post('/form', async (req, res) => {
 	const {
