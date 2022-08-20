@@ -6,22 +6,13 @@ import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
-import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import Modal from '@mui/material/Modal';
 import { makeStyles } from '@mui/styles';
 import Swal from 'sweetalert2';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
 
 import './ResultsForms.scss';
 
@@ -82,19 +73,18 @@ export default function ResultsForms() {
 	const [examRegNo, setExamRegNo] = useState('');
 	const [mobile, setMobile] = useState('');
 	const [othBatch, setOthBatch] = useState('');
+	const [studentName, setStudentName] = useState('');
+	const [firstLanguage, setFirstLanguage] = useState('');
+	const [english, setEnglish] = useState('');
+	const [physics, setPhysics] = useState('');
+	const [chemistry, setChemistry] = useState('');
+	const [bioCs, setBioCs] = useState('');
+	const [maths, setMaths] = useState('');
 	const [cropModalOpen, setCropModalOpen] = useState(false);
 	const [imgSrc, setImgSrc] = useState('');
 	const [crop, setCrop] = useState();
 	const [completedCrop, setCompletedCrop] = useState();
-	const [isResultFetching, setIsResultFetching] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
-	const [results, setResults] = useState(null);
-
-	const [dob, setDob] = React.useState(new Date('2000-04-11'));
-
-	const handleDobChange = (newValue) => {
-		setDob(newValue);
-	};
 
 	const onSelectFile = (e) => {
 		if (e.target.files && e.target.files.length > 0) {
@@ -127,68 +117,19 @@ export default function ResultsForms() {
 		setImgSrc('');
 		setCrop(undefined);
 		setCompletedCrop(undefined);
-		setDob(new Date('2000-04-11'));
-		setResults(null);
 		setIsLoading(false);
-	};
-
-	const getDdMmYyyy = (date) => {
-		const givenDate = new Date(date);
-		let dd = String(givenDate.getDate());
-		if (dd.length != 2) dd = '0' + dd;
-		let mm = String(givenDate.getMonth() + 1);
-		if (mm.length != 2) mm = '0' + mm;
-		const yyyy = givenDate.getFullYear();
-		return `${dd}/${mm}/${yyyy}`;
-	};
-
-	const fetchResults = () => {
-		if (!examRegNo || !dob) {
-			Swal.fire({
-				icon: 'warning',
-				title: 'Oops...',
-				text: 'fill all Exam register number and DOB fields',
-			});
-			return;
-		}
-		setIsResultFetching(true);
-		axios
-			.get('/api/results', {
-				params: {
-					regNo: examRegNo,
-					dob: getDdMmYyyy(dob),
-				},
-			})
-			.then((response) => {
-				console.log(response.data);
-				if (!response.data.studentName) {
-					Swal.fire({
-						icon: 'error',
-						title: 'Oops...',
-						text: `Sorry fetch result failed, check your inputs and try again!`,
-					}).then(() => {
-						setIsResultFetching(false);
-					});
-					return;
-				}
-				setResults(response.data);
-				setIsResultFetching(false);
-			})
-			.catch((error) => {
-				Swal.fire({
-					icon: 'error',
-					title: 'Oops...',
-					text: `Sorry fetch result failed, check your inputs and try again!\n\n${error.message}`,
-				}).then(() => {
-					setIsResultFetching(false);
-				});
-				console.log(error);
-			});
 	};
 
 	const handleSubmit = () => {
 		if (
 			!examRegNo ||
+			!studentName ||
+			!firstLanguage ||
+			!english ||
+			!physics ||
+			!chemistry ||
+			!bioCs ||
+			!maths ||
 			!mobile ||
 			!othBatch ||
 			othBatch === 'select' ||
@@ -220,11 +161,16 @@ export default function ResultsForms() {
 		axios
 			.post('/api/form', {
 				examRegNo,
-				dob: getDdMmYyyy(dob),
+				studentName,
+				firstLanguage,
+				english,
+				physics,
+				chemistry,
+				bioCs,
+				maths,
 				mobile,
 				batch: othBatch,
 				imageBinary: croppedImage,
-				...results,
 			})
 			.then((response) => {
 				console.log(response);
@@ -280,70 +226,111 @@ export default function ResultsForms() {
 							/>
 						</Grid>
 						<Grid item xs={6}>
-							<MobileDatePicker
-								label='Date of birth'
-								inputFormat='dd/MM/yyyy'
-								value={dob}
-								onChange={handleDobChange}
-								renderInput={(params) => <TextField {...params} />}
+							<TextField
+								required
+								id='studentName'
+								name='studentName'
+								label='Student Name'
+								fullWidth
+								variant='standard'
+								value={studentName}
+								onChange={(e) => {
+									setStudentName(e.target.value);
+								}}
 							/>
 						</Grid>
-					</Grid>
-					<div className='result-button-wrapper'>
-						<LoadingButton
-							loading={isResultFetching}
-							variant='contained'
-							onClick={fetchResults}
-							sx={{ mt: 3, ml: 1 }}
-						>
-							GET RESULTS
-						</LoadingButton>
-					</div>
-					{results && (
-						<table>
-							<tbody>
-								<tr>
-									<th>Name</th>
-									<td>{results.studentName}</td>
-								</tr>
-								<tr>
-									<th>Name of father</th>
-									<td>{results.fatherName}</td>
-								</tr>
-								<tr>
-									<th>Name of mother</th>
-									<td>{results.motherName}</td>
-								</tr>
-								<tr>
-									<th>School code</th>
-									<td>{results.schoolCode}</td>
-								</tr>
-								<tr>
-									<th>Group name</th>
-									<td>{results.groupName}</td>
-								</tr>
-								<tr>
-									<th colSpan={2}>Subjects</th>
-								</tr>
-								{Object.keys(results.subjects).map((sub) => {
-									return (
-										<tr key={`sub-${sub}`}>
-											<th>{sub}</th>
-											<td>{results.subjects[sub]}</td>
-										</tr>
-									);
-								})}
-								<tr>
-									<th>Percentage</th>
-									<td>{Math.round(results.percentage * 100) / 100} %</td>
-								</tr>
-							</tbody>
-						</table>
-					)}
-					<Grid container spacing={3}>
+						<Grid item xs={4}>
+							<TextField
+								required
+								id='firstLanguage'
+								name='firstLanguage'
+								label='First Language'
+								fullWidth
+								type='number'
+								variant='standard'
+								value={firstLanguage}
+								onChange={(e) => {
+									setFirstLanguage(e.target.value);
+								}}
+							/>
+						</Grid>
+						<Grid item xs={4}>
+							<TextField
+								required
+								id='english'
+								name='english'
+								label='English'
+								fullWidth
+								type='number'
+								variant='standard'
+								value={english}
+								onChange={(e) => {
+									setEnglish(e.target.value);
+								}}
+							/>
+						</Grid>
+						<Grid item xs={4}>
+							<TextField
+								required
+								id='physics'
+								name='physics'
+								label='Physics'
+								fullWidth
+								type='number'
+								variant='standard'
+								value={physics}
+								onChange={(e) => {
+									setPhysics(e.target.value);
+								}}
+							/>
+						</Grid>
+						<Grid item xs={4}>
+							<TextField
+								required
+								id='chemistry'
+								name='chemistry'
+								label='Chemistry'
+								fullWidth
+								type='number'
+								variant='standard'
+								value={chemistry}
+								onChange={(e) => {
+									setChemistry(e.target.value);
+								}}
+							/>
+						</Grid>
+						<Grid item xs={4}>
+							<TextField
+								required
+								id='bioCs'
+								name='bioCs'
+								label='Biology / CS'
+								fullWidth
+								type='number'
+								variant='standard'
+								value={bioCs}
+								onChange={(e) => {
+									setBioCs(e.target.value);
+								}}
+							/>
+						</Grid>
+						<Grid item xs={4}>
+							<TextField
+								required
+								id='maths'
+								name='maths'
+								label='Maths'
+								fullWidth
+								type='number'
+								variant='standard'
+								value={maths}
+								onChange={(e) => {
+									setMaths(e.target.value);
+								}}
+							/>
+						</Grid>
 						<Grid item xs={12}>
 							<TextField
-								disabled={!results}
 								required
 								id='mobile'
 								name='mobile'
@@ -365,7 +352,6 @@ export default function ResultsForms() {
 
 						<Grid item xs={12}>
 							<TextField
-								disabled={!results}
 								required
 								id='batch'
 								select
@@ -385,7 +371,6 @@ export default function ResultsForms() {
 						{batch === 'other' ? (
 							<Grid item xs={12}>
 								<TextField
-									disabled={!results}
 									required
 									id='othBatch'
 									name='othBatch'
@@ -400,12 +385,7 @@ export default function ResultsForms() {
 							</Grid>
 						) : null}
 						<Grid item xs={12}>
-							<Button
-								disabled={!results}
-								variant='contained'
-								color='warning'
-								component='label'
-							>
+							<Button variant='contained' color='warning' component='label'>
 								Upload Image*
 								<input
 									type='file'
@@ -414,6 +394,9 @@ export default function ResultsForms() {
 									hidden
 								/>
 							</Button>
+							<p className='image-help-text'>
+								Upload student's passport size image
+							</p>
 						</Grid>
 						<Grid item xs={12}>
 							<div>
@@ -431,9 +414,9 @@ export default function ResultsForms() {
 							</div>
 						</Grid>
 					</Grid>
+					<Grid container spacing={3}></Grid>
 					<Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
 						<Button
-							disabled={!results}
 							variant='contained'
 							onClick={handleSubmit}
 							sx={{ mt: 3, ml: 1 }}
