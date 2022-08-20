@@ -89,90 +89,97 @@ router.get('/', async (req, res) => {
 	});
 });
 
-router.get('/results', async (req, res) => {
-	const { regNo, dob, mode } = req.query;
-	const studentData = await scrape({ regNo, dob, mode });
+// router.get('/results', async (req, res) => {
+// 	const { regNo, dob, mode } = req.query;
+// 	const studentData = await scrape({ regNo, dob, mode });
 
-	res.status(200).json(studentData);
-});
+// 	res.status(200).json(studentData);
+// });
 
-const getSubjects = (subjects) => {
-	const jsonSubjects = JSON.parse(subjects);
-	const subjectNames = Object.keys(jsonSubjects);
-	const subjectValues = Object.values(jsonSubjects);
-	let subjectString = '';
-	for (let i = 0; i < subjectNames.length; i++) {
-		subjectString += subjectNames[i] + ' - ' + subjectValues[i] + '\n';
-	}
-	return subjectString;
-};
+// const getSubjects = (subjects) => {
+// 	const jsonSubjects = JSON.parse(subjects);
+// 	const subjectNames = Object.keys(jsonSubjects);
+// 	const subjectValues = Object.values(jsonSubjects);
+// 	let subjectString = '';
+// 	for (let i = 0; i < subjectNames.length; i++) {
+// 		subjectString += subjectNames[i] + ' - ' + subjectValues[i] + '\n';
+// 	}
+// 	return subjectString;
+// };
 
-router.get('/extract', async (req, res) => {
-	const users = await User.find();
+// router.get('/extract', async (req, res) => {
+// 	const users = await User.find();
 
-	const newUsers = [];
-	for (let i = 0; i < users.length; i++) {
-		const user = users[i];
-		newUsers.push({
-			examRegNo: user.examRegNo,
-			dob: user.dob,
-			studentName: user.studentName,
-			fatherName: user.fatherName,
-			motherName: user.motherName,
-			schoolCode: user.schoolCode,
-			groupName: user.groupName,
-			subjects: getSubjects(user.subjects),
-			percentage: user.percentage,
-			mobile: user.mobile,
-			batch: user.batch,
-			photo: user.photo,
-			time: new Date(user.updatedAt).toLocaleString(),
-		});
-	}
+// 	const newUsers = [];
+// 	for (let i = 0; i < users.length; i++) {
+// 		const user = users[i];
+// 		newUsers.push({
+// 			examRegNo: user.examRegNo,
+// 			dob: user.dob,
+// 			studentName: user.studentName,
+// 			fatherName: user.fatherName,
+// 			motherName: user.motherName,
+// 			schoolCode: user.schoolCode,
+// 			groupName: user.groupName,
+// 			subjects: getSubjects(user.subjects),
+// 			percentage: user.percentage,
+// 			mobile: user.mobile,
+// 			batch: user.batch,
+// 			photo: user.photo,
+// 			time: new Date(user.updatedAt).toLocaleString(),
+// 		});
+// 	}
 
-	fs.writeFile('users.json', JSON.stringify(newUsers), 'utf8', (err) => {
-		if (err) {
-			res.status(200).json({
-				message: 'failed',
-				err,
-			});
-		} else {
-			res.status(200).json({
-				message: 'success',
-			});
-		}
-	});
-});
+// 	fs.writeFile('users.json', JSON.stringify(newUsers), 'utf8', (err) => {
+// 		if (err) {
+// 			res.status(200).json({
+// 				message: 'failed',
+// 				err,
+// 			});
+// 		} else {
+// 			res.status(200).json({
+// 				message: 'success',
+// 			});
+// 		}
+// 	});
+// });
 
-router.get('/cleandb', async (req, res) => {
-	try {
-		await User.deleteMany();
-		res.status(200).json({
-			message: 'successfully cleaned db',
-		});
-	} catch (error) {
-		res.status(500).json({
-			message: 'db clean error',
-			error,
-		});
-	}
-});
+// router.get('/cleandb', async (req, res) => {
+// 	try {
+// 		await User.deleteMany();
+// 		res.status(200).json({
+// 			message: 'successfully cleaned db',
+// 		});
+// 	} catch (error) {
+// 		res.status(500).json({
+// 			message: 'db clean error',
+// 			error,
+// 		});
+// 	}
+// });
 
 router.post('/form', async (req, res) => {
 	const {
 		examRegNo,
-		dob,
 		studentName,
-		fatherName,
-		motherName,
-		schoolCode,
-		groupName,
-		subjects,
-		percentage,
+		firstLanguage,
+		english,
+		physics,
+		chemistry,
+		bioCs,
+		maths,
 		mobile,
 		batch,
 		imageBinary,
 	} = req.body;
+
+	const total =
+		Number(firstLanguage) +
+		Number(english) +
+		Number(physics) +
+		Number(chemistry) +
+		Number(bioCs) +
+		Number(maths);
 
 	console.log('Response came from: ', examRegNo);
 
@@ -205,14 +212,14 @@ router.post('/form', async (req, res) => {
 			{
 				$set: {
 					examRegNo,
-					dob,
 					studentName,
-					fatherName,
-					motherName,
-					schoolCode,
-					groupName,
-					subjects: JSON.stringify(subjects),
-					percentage,
+					firstLanguage,
+					english,
+					physics,
+					chemistry,
+					bioCs,
+					maths,
+					total,
 					mobile,
 					batch,
 					photo: `https://insightprimes0.s3.ap-south-1.amazonaws.com/photo/${examRegNo}.png`,
@@ -223,14 +230,14 @@ router.post('/form', async (req, res) => {
 	} else {
 		await new User({
 			examRegNo,
-			dob,
 			studentName,
-			fatherName,
-			motherName,
-			schoolCode,
-			groupName,
-			subjects: JSON.stringify(subjects),
-			percentage,
+			firstLanguage,
+			english,
+			physics,
+			chemistry,
+			bioCs,
+			maths,
+			total,
 			mobile,
 			batch,
 			photo: `https://insightprimes0.s3.ap-south-1.amazonaws.com/photo/${examRegNo}.png`,
