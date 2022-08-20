@@ -111,6 +111,13 @@ export default function ResultsForms() {
 	const resetAll = () => {
 		setBatch('select');
 		setExamRegNo('');
+		setStudentName('');
+		setFirstLanguage('');
+		setEnglish('');
+		setPhysics('');
+		setChemistry('');
+		setBioCs('');
+		setMaths('');
 		setMobile('');
 		setOthBatch('');
 		setCropModalOpen(false);
