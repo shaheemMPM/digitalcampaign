@@ -107,42 +107,42 @@ router.get('/', async (req, res) => {
 // 	return subjectString;
 // };
 
-// router.get('/extract', async (req, res) => {
-// 	const users = await User.find();
+router.get('/extract', async (req, res) => {
+	const users = await User.find();
 
-// 	const newUsers = [];
-// 	for (let i = 0; i < users.length; i++) {
-// 		const user = users[i];
-// 		newUsers.push({
-// 			examRegNo: user.examRegNo,
-// 			dob: user.dob,
-// 			studentName: user.studentName,
-// 			fatherName: user.fatherName,
-// 			motherName: user.motherName,
-// 			schoolCode: user.schoolCode,
-// 			groupName: user.groupName,
-// 			subjects: getSubjects(user.subjects),
-// 			percentage: user.percentage,
-// 			mobile: user.mobile,
-// 			batch: user.batch,
-// 			photo: user.photo,
-// 			time: new Date(user.updatedAt).toLocaleString(),
-// 		});
-// 	}
+	const newUsers = [];
+	for (let i = 0; i < users.length; i++) {
+		const user = users[i];
+		newUsers.push({
+			examRegNo: user.examRegNo,
+			studentName: user.studentName,
+			firstLanguage: user.firstLanguage,
+			english: user.english,
+			physics: user.physics,
+			chemistry: user.chemistry,
+			bioCs: user.bioCs,
+			maths: user.maths,
+			total: user.total,
+			mobile: user.mobile,
+			batch: user.batch,
+			photo: user.photo,
+			time: new Date(user.updatedAt).toLocaleString(),
+		});
+	}
 
-// 	fs.writeFile('users.json', JSON.stringify(newUsers), 'utf8', (err) => {
-// 		if (err) {
-// 			res.status(200).json({
-// 				message: 'failed',
-// 				err,
-// 			});
-// 		} else {
-// 			res.status(200).json({
-// 				message: 'success',
-// 			});
-// 		}
-// 	});
-// });
+	fs.writeFile('users.json', JSON.stringify(newUsers), 'utf8', (err) => {
+		if (err) {
+			res.status(200).json({
+				message: 'failed',
+				err,
+			});
+		} else {
+			res.status(200).json({
+				message: 'success',
+			});
+		}
+	});
+});
 
 // router.get('/cleandb', async (req, res) => {
 // 	try {
