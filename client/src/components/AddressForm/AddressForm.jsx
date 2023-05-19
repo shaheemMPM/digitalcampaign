@@ -219,7 +219,7 @@ export default function AddressForm() {
     const momentoImage = mCanvas.toDataURL("image/png");
 
     axios
-      .post("http://localhost:3333/api/form", {
+      .post("/api/form", {
         fullName,
         examRegNo,
         mobile,
