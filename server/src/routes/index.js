@@ -187,25 +187,28 @@ router.post("/form", async (req, res) => {
 
   const oldUser = await User.findOne({ examRegNo });
 
-  const buf = Buffer.from(
-    imageBinary.replace(/^data:image\/\w+;base64,/, ""),
-    "base64"
-  );
-  const data = {
-    Bucket: "digitalcampaing",
-    Key: `photo/${examRegNo}.png`,
-    Body: buf,
-    ContentEncoding: "base64",
-    ContentType: "image/jpeg",
-  };
+  if (parseInt(grade) === 10) {
+    const buf = Buffer.from(
+      imageBinary.replace(/^data:image\/\w+;base64,/, ""),
+      "base64"
+    );
 
-  try {
-    await s3Bucket.upload(data).promise();
-  } catch (error) {
-    res.status(500).json({
-      message: "error in s3 upload",
-      error,
-    });
+    const data = {
+      Bucket: "digitalcampaing",
+      Key: `photo/${examRegNo}.png`,
+      Body: buf,
+      ContentEncoding: "base64",
+      ContentType: "image/jpeg",
+    };
+
+    try {
+      await s3Bucket.upload(data).promise();
+    } catch (error) {
+      res.status(500).json({
+        message: "error in s3 upload",
+        error,
+      });
+    }
   }
 
   if (oldUser) {
@@ -226,7 +229,10 @@ router.post("/form", async (req, res) => {
           // total,
           // mobile,
           // batch,
-          photo: `https://insightprimes0.s3.ap-south-1.amazonaws.com/photo/${examRegNo}.png`,
+          photo:
+            parseInt(grade) === 10
+              ? `https://digitalcampaing.s3.ap-south-1.amazonaws.com/photo/${examRegNo}.png`
+              : "",
         },
       },
       { new: true }
@@ -246,7 +252,10 @@ router.post("/form", async (req, res) => {
       // total,
       // mobile,
       // batch,
-      photo: `https://insightprimes0.s3.ap-south-1.amazonaws.com/photo/${examRegNo}.png`,
+      photo:
+        parseInt(grade) === 10
+          ? `https://digitalcampaing.s3.ap-south-1.amazonaws.com/photo/${examRegNo}.png`
+          : "",
     }).save();
   }
 

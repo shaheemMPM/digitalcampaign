@@ -177,7 +177,7 @@ export default function ResultsForms() {
     const croppedImage = cropCanvas.toDataURL("image/png");
 
     axios
-      .post("/api/form", {
+      .post("http://localhost:3333/api/form", {
         examRegNo,
         studentName,
         schoolName,
