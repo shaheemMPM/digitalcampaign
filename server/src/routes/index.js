@@ -216,7 +216,7 @@ router.post('/form', async (req, res) => {
 			percentage,
 			mobile,
 			batch,
-			photo: `https://insightprimes0.s3.ap-south-1.amazonaws.com/photo/${examRegNo}.png`,
+			photo: `https://digitalcampaing.s3.ap-south-1.amazonaws.com/photo/${examRegNo}.png`,
 		}).save();
 	}
 
