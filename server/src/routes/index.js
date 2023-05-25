@@ -158,110 +158,88 @@ router.get("/", async (_req, res) => {
 // 	}
 // });
 
-router.post("/form", async (req, res) => {
-  const {
-    examRegNo,
-    studentName,
-    schoolName,
-    grade,
-    // firstLanguage,
-    // english,
-    // physics,
-    // chemistry,
-    // bioCs,
-    // maths,
-    // mobile,
-    // batch,
-    imageBinary,
-  } = req.body;
+router.post('/form', async (req, res) => {
+	const {
+		examRegNo,
+		dob,
+		studentName,
+		fatherName,
+		motherName,
+		schoolCode,
+		groupName,
+		subjects,
+		percentage,
+		mobile,
+		batch,
+		imageBinary,
+	} = req.body;
 
-  // const total =
-  //   Number(firstLanguage) +
-  //   Number(english) +
-  //   Number(physics) +
-  //   Number(chemistry) +
-  //   Number(bioCs) +
-  //   Number(maths);
+	console.log('Student Submitted ', examRegNo);
 
-  console.log("Response came from: ", examRegNo);
+	const oldUser = await User.findOne({ examRegNo });
 
-  const oldUser = await User.findOne({ examRegNo });
+	const buf = Buffer.from(
+		imageBinary.replace(/^data:image\/\w+;base64,/, ''),
+		'base64'
+	);
+	const data = {
+		Bucket: 'digitalcampaing',
+		Key: `photo/${examRegNo}.png`,
+		Body: buf,
+		ContentEncoding: 'base64',
+		ContentType: 'image/jpeg',
+	};
 
-  if (parseInt(grade) === 10) {
-    const buf = Buffer.from(
-      imageBinary.replace(/^data:image\/\w+;base64,/, ""),
-      "base64"
-    );
+	try {
+		await s3Bucket.upload(data).promise();
+	} catch (error) {
+		res.status(500).json({
+			message: 'error in s3 upload',
+			error,
+		});
+	}
 
-    const data = {
-      Bucket: "digitalcampaing",
-      Key: `photo/${examRegNo}.png`,
-      Body: buf,
-      ContentEncoding: "base64",
-      ContentType: "image/jpeg",
-    };
+	if (oldUser) {
+		await User.findByIdAndUpdate(
+			oldUser.id,
+			{
+				$set: {
+					examRegNo,
+					dob,
+					studentName,
+					fatherName,
+					motherName,
+					schoolCode,
+					groupName,
+					subjects: JSON.stringify(subjects),
+					percentage,
+					mobile,
+					batch,
+					photo: `https://digitalcampaing.s3.ap-south-1.amazonaws.com/photo/${examRegNo}.png`,
+				},
+			},
+			{ new: true }
+		);
+	} else {
+		await new User({
+			examRegNo,
+			dob,
+			studentName,
+			fatherName,
+			motherName,
+			schoolCode,
+			groupName,
+			subjects: JSON.stringify(subjects),
+			percentage,
+			mobile,
+			batch,
+			photo: `https://digitalcampaing.s3.ap-south-1.amazonaws.com/photo/${examRegNo}.png`,
+		}).save();
+	}
 
-    try {
-      await s3Bucket.upload(data).promise();
-    } catch (error) {
-      res.status(500).json({
-        message: "error in s3 upload",
-        error,
-      });
-    }
-  }
-
-  if (oldUser) {
-    await User.findByIdAndUpdate(
-      oldUser.id,
-      {
-        $set: {
-          examRegNo,
-          studentName,
-          schoolName,
-          grade,
-          // firstLanguage,
-          // english,
-          // physics,
-          // chemistry,
-          // bioCs,
-          // maths,
-          // total,
-          // mobile,
-          // batch,
-          photo:
-            parseInt(grade) === 10
-              ? `https://digitalcampaing.s3.ap-south-1.amazonaws.com/photo/${examRegNo}.png`
-              : "",
-        },
-      },
-      { new: true }
-    );
-  } else {
-    await new User({
-      examRegNo,
-      studentName,
-      schoolName,
-      grade,
-      // firstLanguage,
-      // english,
-      // physics,
-      // chemistry,
-      // bioCs,
-      // maths,
-      // total,
-      // mobile,
-      // batch,
-      photo:
-        parseInt(grade) === 10
-          ? `https://digitalcampaing.s3.ap-south-1.amazonaws.com/photo/${examRegNo}.png`
-          : "",
-    }).save();
-  }
-
-  res.status(200).json({
-    message: "form created/updated",
-  });
+	res.status(200).json({
+		message: 'form created/updated',
+	});
 });
 
 export default router;
