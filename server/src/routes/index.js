@@ -157,20 +157,7 @@ router.post('/form', async (req, res) => {
 		imageBinary,
 	} = req.body;
 
-	console.log('reached here: ', {
-		examRegNo,
-		dob,
-		studentName,
-		fatherName,
-		motherName,
-		schoolCode,
-		groupName,
-		subjects,
-		percentage,
-		mobile,
-		batch,
-		imageBinary,
-	});
+	console.log('Student Submitted ', examRegNo);
 
 	const oldUser = await User.findOne({ examRegNo });
 
@@ -179,7 +166,7 @@ router.post('/form', async (req, res) => {
 		'base64'
 	);
 	const data = {
-		Bucket: 'insightprimes0',
+		Bucket: 'digitalcampaing',
 		Key: `photo/${examRegNo}.png`,
 		Body: buf,
 		ContentEncoding: 'base64',
